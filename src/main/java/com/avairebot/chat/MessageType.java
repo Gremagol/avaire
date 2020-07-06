@@ -27,7 +27,7 @@ public enum MessageType {
 
     ERROR("#EF5350"),
     WARNING("#FAA61A"),
-    SUCCESS("#43B581"),
+    SUCCESS("#FBD76B"),
     INFO("#3A71C1");
 
     private final String color;

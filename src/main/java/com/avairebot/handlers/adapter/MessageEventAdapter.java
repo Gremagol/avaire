@@ -74,16 +74,10 @@ public class MessageEventAdapter extends EventAdapter {
     private static final Logger log = LoggerFactory.getLogger(MessageEventAdapter.class);
     private static final Pattern userRegEX = Pattern.compile("<@(!|)+[0-9]{16,}+>", Pattern.CASE_INSENSITIVE);
     private static final String mentionMessage = String.join("\n", Arrays.asList(
-        "Hi there! I'm **%s**, a multipurpose Discord bot built for fun by %s!",
-        "You can see what commands I have by using the `%s` command.",
-        "",
-        "I am currently running **AvaIre v%s**",
-        "",
-        "You can find all of my source code on github:",
-        "https://github.com/avaire/avaire",
-        "",
-        "If you like me please vote for AvaIre to help me grow:",
-        "https://discordbots.org/bot/avaire/vote"
+        "Hiiii!~ This looks like a nice place to be. ",
+        "I'm happy to assist you with the entertainment on your server! Thanks for inviting me!~ <3",
+        "To get started with using me, feel free to use my help command `.help`",
+        "I hope we can be good friends!~"
     ));
 
     /**
@@ -119,13 +113,6 @@ public class MessageEventAdapter extends EventAdapter {
                 return;
             }
 
-            if (isMentionableAction(event)) {
-                container = CommandHandler.getLazyCommand(ArrayUtil.toArguments(event.getMessage().getContentRaw())[1]);
-                if (container != null && canExecuteCommand(event, container)) {
-                    invokeMiddlewareStack(new MiddlewareStack(event.getMessage(), container, databaseEventHolder, true));
-                    return;
-                }
-
                 if (avaire.getIntelligenceManager().isEnabled()) {
                     if (isAIEnabledForChannel(event, databaseEventHolder.getGuild())) {
                         avaire.getIntelligenceManager().handleRequest(
@@ -134,7 +121,6 @@ public class MessageEventAdapter extends EventAdapter {
                     }
                     return;
                 }
-            }
 
             if (isSingleBotMention(event.getMessage().getContentRaw().trim())) {
                 sendTagInformationMessage(event);
@@ -213,44 +199,6 @@ public class MessageEventAdapter extends EventAdapter {
 
         if (hasReceivedInfoMessageInTheLastMinute.contains(event.getAuthor().getIdLong())) {
             return;
-        }
-
-        hasReceivedInfoMessageInTheLastMinute.add(event.getAuthor().getIdLong());
-
-        try {
-            ArrayList<String> strings = new ArrayList<>();
-            strings.addAll(Arrays.asList(
-                "To invite me to your server, use this link:",
-                "*:oauth*",
-                "",
-                "You can use `{0}help` to see a list of all the categories of commands.",
-                "You can use `{0}help category` to see a list of commands for that category.",
-                "For specific command help, use `{0}help command` (for example `{0}help {1}{2}`,\n`{0}help {2}` also works)"
-            ));
-
-            if (avaire.getIntelligenceManager().isEnabled()) {
-                strings.add("\nYou can tag me in a message with <@:botId> to send me a message that I should process using my AI.");
-            }
-
-            strings.add("\n**Full list of commands**\n*https://avairebot.com/commands*");
-            strings.add("\nAvaIre Support Server:\n*https://avairebot.com/support*");
-
-            CommandContainer commandContainer = CommandHandler.getCommands().stream()
-                .filter(container -> !container.getCategory().isGlobalOrSystem())
-                .findAny()
-                .get();
-
-            MessageFactory.makeEmbeddedMessage(event.getMessage(), Color.decode("#E91E63"), I18n.format(
-                String.join("\n", strings),
-                CommandHandler.getCommand(HelpCommand.class).getCategory().getPrefix(event.getMessage()),
-                commandContainer.getCategory().getPrefix(event.getMessage()),
-                commandContainer.getTriggers().iterator().next()
-            ))
-                .set("oauth", avaire.getConfig().getString("discord.oauth"))
-                .set("botId", avaire.getSelfUser().getId())
-                .queue();
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
