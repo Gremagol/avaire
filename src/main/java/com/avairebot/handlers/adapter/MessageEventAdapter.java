@@ -74,10 +74,12 @@ public class MessageEventAdapter extends EventAdapter {
     private static final Logger log = LoggerFactory.getLogger(MessageEventAdapter.class);
     private static final Pattern userRegEX = Pattern.compile("<@(!|)+[0-9]{16,}+>", Pattern.CASE_INSENSITIVE);
     private static final String mentionMessage = String.join("\n", Arrays.asList(
-        "Hiiii!~ This looks like a nice place to be. ",
+        "Hiiii!~ This looks like a nice place to be.",
+        "I'm Hat Kid, a unofficial/fan-created Bot from the Game \"A Hat In Time\".", 
         "I'm happy to assist you with the entertainment on your server! Thanks for inviting me!~ <3",
         "To get started with using me, feel free to use my help command `.help`",
-        "I hope we can be good friends!~"
+        "I hope we can be good friends!~",
+        "If you need help, consider joining my Support/Hangout Server! Links are in the `.help` message you get."
     ));
 
     /**
