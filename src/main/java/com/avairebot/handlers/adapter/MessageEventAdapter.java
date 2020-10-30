@@ -44,17 +44,17 @@ import com.avairebot.shared.DiscordConstants;
 import com.avairebot.utilities.ArrayUtil;
 import com.avairebot.utilities.RestActionUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.sql.SQLException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -115,6 +115,13 @@ public class MessageEventAdapter extends EventAdapter {
                 return;
             }
 
+            if (isMentionableAction(event)) {
+                container = CommandHandler.getLazyCommand(ArrayUtil.toArguments(event.getMessage().getContentRaw())[1]);
+                if (container != null && canExecuteCommand(event, container)) {
+                    invokeMiddlewareStack(new MiddlewareStack(event.getMessage(), container, databaseEventHolder, true));
+                    return;
+                }
+
                 if (avaire.getIntelligenceManager().isEnabled()) {
                     if (isAIEnabledForChannel(event, databaseEventHolder.getGuild())) {
                         avaire.getIntelligenceManager().handleRequest(
@@ -123,6 +130,7 @@ public class MessageEventAdapter extends EventAdapter {
                     }
                     return;
                 }
+            }
 
             if (isSingleBotMention(event.getMessage().getContentRaw().trim())) {
                 sendTagInformationMessage(event);
@@ -202,6 +210,7 @@ public class MessageEventAdapter extends EventAdapter {
         if (hasReceivedInfoMessageInTheLastMinute.contains(event.getAuthor().getIdLong())) {
             return;
         }
+
     }
 
     private CompletableFuture<DatabaseEventHolder> loadDatabasePropertiesIntoMemory(final MessageReceivedEvent event) {
